@@ -17,9 +17,6 @@ __pycache__/
 .venv/
 venv/
 
-# Datos de Postgres si se montaran fuera de un volumen nombrado
-mise-basededatos/data/
-
 # Editores / SO
 .vscode/*
 !.vscode/extensions.json

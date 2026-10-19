@@ -14,8 +14,8 @@ archivo histórico, comandas en contingencia) viajan por mensajería asíncrona.
 | `tests/` | Pruebas del dominio, de las funciones (con AWS simulado) y de los scripts |
 | `docs/migracion/` | Documentación: arquitectura, modelo de datos, API, despliegue, riesgos, validación y mensajería (`08-mensajeria.md`) |
 
-Las carpetas `mise-frontend`, `mise-backend`, `mise-basededatos` y `mise-nginx` son la versión
-anterior (servidor local), **deprecada**. No forman parte de la v2.
+La versión 1 (nodo local con FastAPI, SQLite y frontend propio) quedó en el repositorio anterior y está
+deprecada. `docs/migracion/00-inventario.md` y `caracterizacion.md` documentan cómo era y qué cambió.
 
 ## Probar en tu PC
 
