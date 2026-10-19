@@ -1,0 +1,36 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /locales/{local_id}/admin/{recurso}",
+  "rawPath": "/locales/{local_id}/admin/{recurso}",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "pathParameters": {
+    "local_id": "local_01",
+    "recurso": "configuracion"
+  },
+  "queryStringParameters": null,
+  "requestContext": {
+    "requestId": "prueba-consola",
+    "routeKey": "GET /locales/{local_id}/admin/{recurso}",
+    "http": {
+      "method": "GET",
+      "path": "/locales/{local_id}/admin/{recurso}",
+      "sourceIp": "203.0.113.10"
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "mock-admin",
+          "email": "mock-admin@demo.invalid",
+          "email_verified": "true",
+          "name": "mock-admin",
+          "iss": "https://accounts.google.com"
+        },
+        "scopes": null
+      }
+    }
+  },
+  "body": null,
+  "isBase64Encoded": false
+}

@@ -1,0 +1,24 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /publico/{tenant_id}/{local_id}/reservas/disponibilidad",
+  "rawPath": "/publico/{tenant_id}/{local_id}/reservas/disponibilidad",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "pathParameters": {
+    "tenant_id": "demo",
+    "local_id": "local_01"
+  },
+  "queryStringParameters": null,
+  "requestContext": {
+    "requestId": "prueba-consola",
+    "routeKey": "GET /publico/{tenant_id}/{local_id}/reservas/disponibilidad",
+    "http": {
+      "method": "GET",
+      "path": "/publico/{tenant_id}/{local_id}/reservas/disponibilidad",
+      "sourceIp": "203.0.113.10"
+    }
+  },
+  "body": null,
+  "isBase64Encoded": false
+}

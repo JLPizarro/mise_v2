@@ -1,0 +1,35 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /locales/{local_id}/caja/autorizadores",
+  "rawPath": "/locales/{local_id}/caja/autorizadores",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "pathParameters": {
+    "local_id": "local_01"
+  },
+  "queryStringParameters": null,
+  "requestContext": {
+    "requestId": "prueba-consola",
+    "routeKey": "GET /locales/{local_id}/caja/autorizadores",
+    "http": {
+      "method": "GET",
+      "path": "/locales/{local_id}/caja/autorizadores",
+      "sourceIp": "203.0.113.10"
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "mock-cajero",
+          "email": "mock-cajero@demo.invalid",
+          "email_verified": "true",
+          "name": "mock-cajero",
+          "iss": "https://accounts.google.com"
+        },
+        "scopes": null
+      }
+    }
+  },
+  "body": null,
+  "isBase64Encoded": false
+}

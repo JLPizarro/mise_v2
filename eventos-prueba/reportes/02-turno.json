@@ -1,0 +1,36 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /locales/{local_id}/reportes/turnos/{turno_id}",
+  "rawPath": "/locales/{local_id}/reportes/turnos/{turno_id}",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "pathParameters": {
+    "local_id": "local_01",
+    "turno_id": "REEMPLAZAR_TURNO_ID"
+  },
+  "queryStringParameters": null,
+  "requestContext": {
+    "requestId": "prueba-consola",
+    "routeKey": "GET /locales/{local_id}/reportes/turnos/{turno_id}",
+    "http": {
+      "method": "GET",
+      "path": "/locales/{local_id}/reportes/turnos/{turno_id}",
+      "sourceIp": "203.0.113.10"
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "mock-dueno",
+          "email": "mock-dueno@demo.invalid",
+          "email_verified": "true",
+          "name": "mock-dueno",
+          "iss": "https://accounts.google.com"
+        },
+        "scopes": null
+      }
+    }
+  },
+  "body": null,
+  "isBase64Encoded": false
+}

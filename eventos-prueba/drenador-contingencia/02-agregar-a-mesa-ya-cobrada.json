@@ -1,0 +1,16 @@
+{
+  "Records": [
+    {
+      "messageId": "prueba-1",
+      "receiptHandle": "prueba",
+      "body": "{\"v\": 1, \"operacion\": \"pedido.agregar_item\", \"local_id\": \"local_01\", \"grupo\": \"local_01#m05\", \"cuerpo\": {\"mesa_id\": \"m05\", \"pedido_id\": \"01K7H0Z3Q8W4M2N5P6R7S8T9W4\", \"producto_id\": \"cafe\"}, \"command_id\": \"01K7H0Z3Q8W4M2N5P6R7S8T91A\", \"sub\": \"mock-garzon\", \"email\": \"mock-garzon@demo.invalid\", \"nombre\": \"mock-garzon\", \"ocurrido_en\": \"2026-10-15T20:05:00.000Z\", \"entrada\": \"cliente\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1760000000000",
+        "MessageGroupId": "local_01#m07",
+        "MessageDeduplicationId": "01K7H0Z3Q8W4M2N5P6R7S8T91A"
+      },
+      "eventSource": "aws:sqs"
+    }
+  ]
+}

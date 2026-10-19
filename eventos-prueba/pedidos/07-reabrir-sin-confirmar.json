@@ -1,0 +1,37 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /locales/{local_id}/pedidos/{pedido_id}/reabrir",
+  "rawPath": "/locales/{local_id}/pedidos/{pedido_id}/reabrir",
+  "headers": {
+    "content-type": "application/json",
+    "x-command-id": "01K7H0Z3Q8W4M2N5P6R7S8T906"
+  },
+  "pathParameters": {
+    "local_id": "local_01",
+    "pedido_id": "01K7H0Z3Q8W4M2N5P6R7S8T9W4"
+  },
+  "queryStringParameters": null,
+  "requestContext": {
+    "requestId": "prueba-consola",
+    "routeKey": "POST /locales/{local_id}/pedidos/{pedido_id}/reabrir",
+    "http": {
+      "method": "POST",
+      "path": "/locales/{local_id}/pedidos/{pedido_id}/reabrir",
+      "sourceIp": "203.0.113.10"
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "mock-garzon",
+          "email": "mock-garzon@demo.invalid",
+          "email_verified": "true",
+          "name": "mock-garzon",
+          "iss": "https://accounts.google.com"
+        },
+        "scopes": null
+      }
+    }
+  },
+  "body": "{\"mesa_id\": \"m05\"}",
+  "isBase64Encoded": false
+}

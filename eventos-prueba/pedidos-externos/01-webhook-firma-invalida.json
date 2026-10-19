@@ -1,0 +1,26 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /webhooks/{plataforma}/{tenant_id}/{local_id}",
+  "rawPath": "/webhooks/{plataforma}/{tenant_id}/{local_id}",
+  "headers": {
+    "content-type": "application/json",
+    "x-firma": "invalida"
+  },
+  "pathParameters": {
+    "plataforma": "demo",
+    "tenant_id": "demo",
+    "local_id": "local_01"
+  },
+  "queryStringParameters": null,
+  "requestContext": {
+    "requestId": "prueba-consola",
+    "routeKey": "POST /webhooks/{plataforma}/{tenant_id}/{local_id}",
+    "http": {
+      "method": "POST",
+      "path": "/webhooks/{plataforma}/{tenant_id}/{local_id}",
+      "sourceIp": "203.0.113.10"
+    }
+  },
+  "body": "{\"pedido\": 1}",
+  "isBase64Encoded": false
+}

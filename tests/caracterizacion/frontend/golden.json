@@ -1,0 +1,972 @@
+{
+  "division_igual": [
+    {
+      "total": 10000,
+      "n": 3,
+      "partes": [
+        3334,
+        3333,
+        3333
+      ]
+    },
+    {
+      "total": 10000,
+      "n": 2,
+      "partes": [
+        5000,
+        5000
+      ]
+    },
+    {
+      "total": 100,
+      "n": 7,
+      "partes": [
+        15,
+        15,
+        14,
+        14,
+        14,
+        14,
+        14
+      ]
+    },
+    {
+      "total": 1,
+      "n": 2,
+      "partes": [
+        1,
+        0
+      ]
+    },
+    {
+      "total": 5,
+      "n": 5,
+      "partes": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "total": 0,
+      "n": 3,
+      "partes": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "total": 12345,
+      "n": 20,
+      "partes": [
+        618,
+        618,
+        618,
+        618,
+        618,
+        617,
+        617,
+        617,
+        617,
+        617,
+        617,
+        617,
+        617,
+        617,
+        617,
+        617,
+        617,
+        617,
+        617,
+        617
+      ]
+    },
+    {
+      "total": 7,
+      "n": 20,
+      "partes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "total": 99999,
+      "n": 4,
+      "partes": [
+        25000,
+        25000,
+        25000,
+        24999
+      ]
+    }
+  ],
+  "seleccion_items": [
+    {
+      "seleccion": [
+        {
+          "item_id": "a",
+          "cantidad": 2
+        }
+      ],
+      "pagos": [],
+      "saldo": 99999,
+      "resultado": {
+        "seleccion": [
+          {
+            "item_id": "a",
+            "cantidad": 2
+          }
+        ],
+        "monto": 3000
+      }
+    },
+    {
+      "seleccion": [
+        {
+          "item_id": "a",
+          "cantidad": 5
+        }
+      ],
+      "pagos": [],
+      "saldo": 99999,
+      "resultado": {
+        "seleccion": [
+          {
+            "item_id": "a",
+            "cantidad": 3
+          }
+        ],
+        "monto": 4500
+      }
+    },
+    {
+      "seleccion": [
+        {
+          "item_id": "a",
+          "cantidad": 2
+        },
+        {
+          "item_id": "b",
+          "cantidad": 1
+        }
+      ],
+      "pagos": [],
+      "saldo": 5000,
+      "resultado": {
+        "seleccion": [
+          {
+            "item_id": "a",
+            "cantidad": 2
+          },
+          {
+            "item_id": "b",
+            "cantidad": 1
+          }
+        ],
+        "monto": 5000
+      }
+    },
+    {
+      "seleccion": [
+        {
+          "item_id": "a",
+          "cantidad": 2
+        }
+      ],
+      "pagos": [
+        {
+          "tipo_division": "items",
+          "items_cobrados": [
+            {
+              "item_id": "a",
+              "cantidad": 2
+            }
+          ]
+        }
+      ],
+      "saldo": 99999,
+      "resultado": {
+        "seleccion": [
+          {
+            "item_id": "a",
+            "cantidad": 1
+          }
+        ],
+        "monto": 1500
+      }
+    },
+    {
+      "seleccion": [
+        {
+          "item_id": "a",
+          "cantidad": 2
+        }
+      ],
+      "pagos": [
+        {
+          "tipo_division": "monto_libre",
+          "items_cobrados": [
+            {
+              "item_id": "a",
+              "cantidad": 3
+            }
+          ]
+        }
+      ],
+      "saldo": 99999,
+      "resultado": {
+        "seleccion": [
+          {
+            "item_id": "a",
+            "cantidad": 2
+          }
+        ],
+        "monto": 3000
+      }
+    },
+    {
+      "seleccion": [
+        {
+          "item_id": "x",
+          "cantidad": 1
+        }
+      ],
+      "pagos": [],
+      "saldo": 99999,
+      "resultado": null
+    },
+    {
+      "seleccion": [
+        {
+          "item_id": "a",
+          "cantidad": 0
+        }
+      ],
+      "pagos": [],
+      "saldo": 99999,
+      "resultado": null
+    },
+    {
+      "seleccion": [
+        {
+          "item_id": "a",
+          "cantidad": 1
+        },
+        {
+          "item_id": "a",
+          "cantidad": 3
+        }
+      ],
+      "pagos": [],
+      "saldo": 99999,
+      "resultado": {
+        "seleccion": [
+          {
+            "item_id": "a",
+            "cantidad": 1
+          },
+          {
+            "item_id": "a",
+            "cantidad": 3
+          }
+        ],
+        "monto": 6000
+      }
+    }
+  ],
+  "vista_previa_items": [
+    {
+      "item_id": "a",
+      "precio_congelado": 1500,
+      "precio_vista_previa": 1700
+    },
+    {
+      "item_id": "b",
+      "precio_congelado": 10000,
+      "precio_vista_previa": 10000
+    },
+    {
+      "item_id": "c",
+      "precio_congelado": 999,
+      "precio_vista_previa": 999
+    }
+  ],
+  "monto_libre": [
+    {
+      "texto": "5000",
+      "saldo": 8000,
+      "monto": 5000,
+      "valido": true
+    },
+    {
+      "texto": "8000",
+      "saldo": 8000,
+      "monto": 8000,
+      "valido": true
+    },
+    {
+      "texto": "8001",
+      "saldo": 8000,
+      "monto": 8001,
+      "valido": false
+    },
+    {
+      "texto": "0",
+      "saldo": 8000,
+      "monto": 0,
+      "valido": false
+    },
+    {
+      "texto": "",
+      "saldo": 8000,
+      "monto": 0,
+      "valido": false
+    },
+    {
+      "texto": "12.9",
+      "saldo": 8000,
+      "monto": 12,
+      "valido": true
+    },
+    {
+      "texto": "abc",
+      "saldo": 8000,
+      "monto": 0,
+      "valido": false
+    },
+    {
+      "texto": "-3",
+      "saldo": 8000,
+      "monto": 0,
+      "valido": false
+    }
+  ],
+  "propina_sugerida": [
+    {
+      "monto": 10000,
+      "pct": 10,
+      "propina": 1000
+    },
+    {
+      "monto": 1005,
+      "pct": 10,
+      "propina": 101
+    },
+    {
+      "monto": 1015,
+      "pct": 10,
+      "propina": 102
+    },
+    {
+      "monto": 1025,
+      "pct": 10,
+      "propina": 103
+    },
+    {
+      "monto": 999,
+      "pct": 10,
+      "propina": 100
+    },
+    {
+      "monto": 3333,
+      "pct": 10,
+      "propina": 333
+    },
+    {
+      "monto": 10000,
+      "pct": 0,
+      "propina": 0
+    },
+    {
+      "monto": 7,
+      "pct": 15,
+      "propina": 1
+    },
+    {
+      "monto": 12345,
+      "pct": 12,
+      "propina": 1481
+    },
+    {
+      "monto": 250025,
+      "pct": 2,
+      "propina": 5001
+    },
+    {
+      "monto": 5,
+      "pct": 10,
+      "propina": 1
+    },
+    {
+      "monto": 15,
+      "pct": 10,
+      "propina": 2
+    },
+    {
+      "monto": 25,
+      "pct": 10,
+      "propina": 3
+    }
+  ],
+  "boton_propina": [
+    {
+      "total": 10000,
+      "propina": 1000
+    },
+    {
+      "total": 1005,
+      "propina": 101
+    },
+    {
+      "total": 15,
+      "propina": 2
+    },
+    {
+      "total": 25,
+      "propina": 3
+    },
+    {
+      "total": 3333,
+      "propina": 333
+    }
+  ],
+  "formulario_pago": [
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": false,
+      "medios": [
+        {
+          "metodo": "efectivo",
+          "monto": "",
+          "codigo_autorizacion_pos": "",
+          "efectivo_recibido": "11000"
+        }
+      ],
+      "resultado": {
+        "valido": true,
+        "pagos": [
+          {
+            "metodo": "efectivo",
+            "monto": 10000,
+            "propina": 1000,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": false,
+      "medios": [
+        {
+          "metodo": "efectivo",
+          "monto": "",
+          "codigo_autorizacion_pos": "",
+          "efectivo_recibido": "10999"
+        }
+      ],
+      "resultado": {
+        "valido": false,
+        "pagos": [
+          {
+            "metodo": "efectivo",
+            "monto": 10000,
+            "propina": 1000,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": false,
+      "medios": [
+        {
+          "metodo": "efectivo",
+          "monto": "",
+          "codigo_autorizacion_pos": "",
+          "efectivo_recibido": "20000"
+        }
+      ],
+      "resultado": {
+        "valido": true,
+        "pagos": [
+          {
+            "metodo": "efectivo",
+            "monto": 10000,
+            "propina": 1000,
+            "vuelto": 9000
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": false,
+      "medios": [
+        {
+          "metodo": "debito",
+          "monto": "",
+          "codigo_autorizacion_pos": "",
+          "efectivo_recibido": ""
+        }
+      ],
+      "resultado": {
+        "valido": false,
+        "pagos": [
+          {
+            "metodo": "debito",
+            "monto": 10000,
+            "propina": 1000,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": false,
+      "medios": [
+        {
+          "metodo": "debito",
+          "monto": "",
+          "codigo_autorizacion_pos": "  ",
+          "efectivo_recibido": ""
+        }
+      ],
+      "resultado": {
+        "valido": false,
+        "pagos": [
+          {
+            "metodo": "debito",
+            "monto": 10000,
+            "propina": 1000,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": false,
+      "medios": [
+        {
+          "metodo": "credito",
+          "monto": "",
+          "codigo_autorizacion_pos": "A1",
+          "efectivo_recibido": ""
+        }
+      ],
+      "resultado": {
+        "valido": true,
+        "pagos": [
+          {
+            "metodo": "credito",
+            "monto": 10000,
+            "propina": 1000,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": false,
+      "medios": [
+        {
+          "metodo": "transferencia",
+          "monto": "",
+          "codigo_autorizacion_pos": "",
+          "efectivo_recibido": ""
+        }
+      ],
+      "resultado": {
+        "valido": true,
+        "pagos": [
+          {
+            "metodo": "transferencia",
+            "monto": 10000,
+            "propina": 1000,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": false,
+      "medios": [
+        {
+          "metodo": null,
+          "monto": "",
+          "codigo_autorizacion_pos": "",
+          "efectivo_recibido": ""
+        }
+      ],
+      "resultado": {
+        "valido": false,
+        "pagos": [
+          {
+            "metodo": null,
+            "monto": 10000,
+            "propina": 1000,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": true,
+      "medios": [
+        {
+          "metodo": "debito",
+          "monto": "6000",
+          "codigo_autorizacion_pos": "A1",
+          "efectivo_recibido": ""
+        }
+      ],
+      "resultado": {
+        "valido": false,
+        "pagos": [
+          {
+            "metodo": "debito",
+            "monto": 6000,
+            "propina": 1000,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": true,
+      "medios": [
+        {
+          "metodo": "debito",
+          "monto": "6000",
+          "codigo_autorizacion_pos": "A1",
+          "efectivo_recibido": ""
+        },
+        {
+          "metodo": "efectivo",
+          "monto": "",
+          "codigo_autorizacion_pos": "",
+          "efectivo_recibido": "5000"
+        }
+      ],
+      "resultado": {
+        "valido": true,
+        "pagos": [
+          {
+            "metodo": "debito",
+            "monto": 6000,
+            "propina": 0,
+            "vuelto": 0
+          },
+          {
+            "metodo": "efectivo",
+            "monto": 4000,
+            "propina": 1000,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": true,
+      "medios": [
+        {
+          "metodo": "debito",
+          "monto": "6000",
+          "codigo_autorizacion_pos": "A1",
+          "efectivo_recibido": ""
+        },
+        {
+          "metodo": "efectivo",
+          "monto": "",
+          "codigo_autorizacion_pos": "",
+          "efectivo_recibido": "4999"
+        }
+      ],
+      "resultado": {
+        "valido": false,
+        "pagos": [
+          {
+            "metodo": "debito",
+            "monto": 6000,
+            "propina": 0,
+            "vuelto": 0
+          },
+          {
+            "metodo": "efectivo",
+            "monto": 4000,
+            "propina": 1000,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": true,
+      "medios": [
+        {
+          "metodo": "efectivo",
+          "monto": "6000",
+          "codigo_autorizacion_pos": "",
+          "efectivo_recibido": "6000"
+        },
+        {
+          "metodo": "credito",
+          "monto": "",
+          "codigo_autorizacion_pos": "B2",
+          "efectivo_recibido": ""
+        }
+      ],
+      "resultado": {
+        "valido": true,
+        "pagos": [
+          {
+            "metodo": "efectivo",
+            "monto": 6000,
+            "propina": 0,
+            "vuelto": 0
+          },
+          {
+            "metodo": "credito",
+            "monto": 4000,
+            "propina": 1000,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 1000,
+      "mixto": true,
+      "medios": [
+        {
+          "metodo": "efectivo",
+          "monto": "6000",
+          "codigo_autorizacion_pos": "",
+          "efectivo_recibido": "5999"
+        },
+        {
+          "metodo": "credito",
+          "monto": "",
+          "codigo_autorizacion_pos": "B2",
+          "efectivo_recibido": ""
+        }
+      ],
+      "resultado": {
+        "valido": false,
+        "pagos": [
+          {
+            "metodo": "efectivo",
+            "monto": 6000,
+            "propina": 0,
+            "vuelto": 0
+          },
+          {
+            "metodo": "credito",
+            "monto": 4000,
+            "propina": 1000,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 0,
+      "mixto": true,
+      "medios": [
+        {
+          "metodo": "debito",
+          "monto": "10000",
+          "codigo_autorizacion_pos": "A1",
+          "efectivo_recibido": ""
+        },
+        {
+          "metodo": "efectivo",
+          "monto": "",
+          "codigo_autorizacion_pos": "",
+          "efectivo_recibido": "0"
+        }
+      ],
+      "resultado": {
+        "valido": false,
+        "pagos": [
+          {
+            "metodo": "debito",
+            "monto": 10000,
+            "propina": 0,
+            "vuelto": 0
+          },
+          {
+            "metodo": "efectivo",
+            "monto": 0,
+            "propina": 0,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 0,
+      "mixto": true,
+      "medios": [
+        {
+          "metodo": "debito",
+          "monto": "12000",
+          "codigo_autorizacion_pos": "A1",
+          "efectivo_recibido": ""
+        },
+        {
+          "metodo": "efectivo",
+          "monto": "",
+          "codigo_autorizacion_pos": "",
+          "efectivo_recibido": "0"
+        }
+      ],
+      "resultado": {
+        "valido": false,
+        "pagos": [
+          {
+            "metodo": "debito",
+            "monto": 12000,
+            "propina": 0,
+            "vuelto": 0
+          },
+          {
+            "metodo": "efectivo",
+            "monto": 0,
+            "propina": 0,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 0,
+      "mixto": true,
+      "medios": [
+        {
+          "metodo": "debito",
+          "monto": "4000",
+          "codigo_autorizacion_pos": "A1",
+          "efectivo_recibido": ""
+        },
+        {
+          "metodo": "debito",
+          "monto": "",
+          "codigo_autorizacion_pos": "B",
+          "efectivo_recibido": ""
+        }
+      ],
+      "resultado": {
+        "valido": true,
+        "pagos": [
+          {
+            "metodo": "debito",
+            "monto": 4000,
+            "propina": 0,
+            "vuelto": 0
+          },
+          {
+            "metodo": "debito",
+            "monto": 6000,
+            "propina": 0,
+            "vuelto": 0
+          }
+        ]
+      }
+    },
+    {
+      "total": 10000,
+      "propina": 0,
+      "mixto": true,
+      "medios": [
+        {
+          "metodo": "debito",
+          "monto": "1",
+          "codigo_autorizacion_pos": "A",
+          "efectivo_recibido": ""
+        },
+        {
+          "metodo": "debito",
+          "monto": "1",
+          "codigo_autorizacion_pos": "B",
+          "efectivo_recibido": ""
+        },
+        {
+          "metodo": "debito",
+          "monto": "",
+          "codigo_autorizacion_pos": "C",
+          "efectivo_recibido": ""
+        }
+      ],
+      "resultado": {
+        "valido": false,
+        "pagos": [
+          {
+            "metodo": "debito",
+            "monto": 1,
+            "propina": 0,
+            "vuelto": 0
+          },
+          {
+            "metodo": "debito",
+            "monto": 1,
+            "propina": 0,
+            "vuelto": 0
+          },
+          {
+            "metodo": "debito",
+            "monto": 9998,
+            "propina": 0,
+            "vuelto": 0
+          }
+        ]
+      }
+    }
+  ]
+}

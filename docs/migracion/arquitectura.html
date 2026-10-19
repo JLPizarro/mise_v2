@@ -1,0 +1,409 @@
+<title>Arquitectura MISE en AWS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  /* Layout: documento técnico de una columna; cada flujo es una lámina ancha con su explicación debajo. */
+  :root {
+    --bg: #f3f5f3; --fg: #1b2420; --muted: #5a6761; --borde: #b9c4bf; --lamina: #fbfcfb; --panel: #ffffff;
+    --dato: #e8f1ee; --cola: #f6efe4;
+    --sync: #0b7666; --async: #a65c15; --cont: #b23047;
+    --f-titulo: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --f-cuerpo: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111614; --fg: #e3e9e6; --muted: #98a6a0; --borde: #3a4843; --lamina: #161d1a; --panel: #1c2421;
+      --dato: #1b2e29; --cola: #2e261b; --sync: #3fc4ad; --async: #e5a05c; --cont: #f07188; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111614; --fg: #e3e9e6; --muted: #98a6a0; --borde: #3a4843; --lamina: #161d1a; --panel: #1c2421;
+    --dato: #1b2e29; --cola: #2e261b; --sync: #3fc4ad; --async: #e5a05c; --cont: #f07188; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--fg); font: 400 16px/1.55 var(--f-cuerpo); }
+  .pagina { max-width: 1180px; margin: 0 auto; padding-block: 32px 64px;
+            padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  header { display: grid; gap: 10px; max-width: 70ch; }
+  .rotulo { font: 500 12px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  h1 { font: 700 clamp(34px, 5vw, 52px)/1.02 var(--f-titulo); margin: 0; text-wrap: balance; letter-spacing: .01em; }
+  h2 { font: 600 28px/1.1 var(--f-titulo); margin: 0; text-wrap: balance; }
+  p { margin: 0; max-width: 70ch; }
+  code { font: 500 .86em var(--f-mono); }
+  .leyenda { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 18px; padding: 12px 16px; border: 1px solid var(--borde);
+             border-radius: 8px; background: var(--lamina); font-size: 14px; }
+  .leyenda span { display: inline-flex; align-items: center; gap: 8px; }
+  .muestra { width: 34px; height: 0; border-top: 2.5px solid; }
+  .m-sync { border-color: var(--sync); } .m-async { border-color: var(--async); } .m-cont { border-color: var(--cont); }
+  .m-neutro { border-color: var(--muted); border-top-style: dashed; }
+  nav { margin-top: 22px; }
+  nav ol { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  nav a { display: inline-block; padding: 5px 12px; border: 1px solid var(--borde); border-radius: 999px; color: var(--fg);
+          text-decoration: none; font-size: 14px; background: var(--panel); }
+  nav a:hover, nav a:focus-visible { border-color: var(--sync); outline: none; color: var(--sync); }
+  section { margin-top: 56px; display: grid; gap: 14px; scroll-margin-top: 16px; }
+  .lamina { overflow-x: auto; border: 1px solid var(--borde); border-radius: 10px; background: var(--lamina); }
+  figure { margin: 0; display: grid; gap: 12px; }
+  figure svg { display: block; width: 100%; height: auto; min-width: 860px; }
+  figcaption { font-size: 15px; color: var(--muted); max-width: 80ch; }
+  .notas { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px 28px; padding: 0; margin: 0; list-style: none; }
+  .notas li { min-width: 0; padding-left: 14px; border-left: 2px solid var(--borde); font-size: 15px; }
+  .notas strong { font-weight: 600; }
+  footer { margin-top: 56px; font-size: 14px; color: var(--muted); }
+
+  /* SVG: todo color sale de los tokens, así las láminas funcionan en tema claro y oscuro. */
+  .caja { fill: var(--panel); stroke: var(--borde); stroke-width: 1.2; }
+  .dato { fill: var(--dato); stroke: var(--borde); stroke-width: 1.2; }
+  .cola { fill: var(--cola); stroke: var(--borde); stroke-width: 1.2; }
+  .nota { fill: none; stroke: var(--borde); stroke-width: 1.2; stroke-dasharray: 4 4; }
+  .div { stroke: var(--borde); stroke-width: 1; }
+  .vida { stroke: var(--borde); stroke-width: 1.2; stroke-dasharray: 3 5; }
+  .t { fill: var(--fg); font: 600 13px var(--f-cuerpo); }
+  .s { fill: var(--muted); font: 400 11.5px var(--f-cuerpo); }
+  .li { fill: var(--fg); font: 500 12px var(--f-mono); }
+  .lane { fill: var(--muted); font: 600 12px var(--f-cuerpo); letter-spacing: .02em; }
+  .e { fill: var(--fg); font: 500 11.5px var(--f-cuerpo); paint-order: stroke; stroke: var(--lamina); stroke-width: 4px; stroke-linejoin: round; }
+  .e.rojo { fill: var(--cont); }
+  .l { fill: none; stroke-width: 1.8; }
+  .sync { stroke: var(--sync); } .async { stroke: var(--async); } .cont { stroke: var(--cont); }
+  .neutro { stroke: var(--muted); stroke-dasharray: 5 4; }
+  .p-sync { fill: var(--sync); } .p-async { fill: var(--async); } .p-cont { fill: var(--cont); } .p-neutro { fill: var(--muted); }
+  .borde-sync { stroke: var(--sync); stroke-width: 1.6; }
+  .borde-cont { stroke: var(--cont); stroke-width: 1.6; }
+  .borde-async { stroke: var(--async); stroke-width: 1.6; }
+  @media (prefers-reduced-motion: no-preference) { nav a { transition: color .15s, border-color .15s; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <marker id="m-sync" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="p-sync"/></marker>
+    <marker id="m-async" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="p-async"/></marker>
+    <marker id="m-cont" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="p-cont"/></marker>
+    <marker id="m-neutro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="p-neutro"/></marker>
+  </defs>
+</svg>
+
+<div class="pagina">
+  <header>
+    <span class="rotulo">MISE · POS para restaurantes · AWS us-east-1</span>
+    <h1>Arquitectura MISE en AWS</h1>
+    <p>Cómo viaja cada operación por la nube: la comanda que se resuelve en la petición, los eventos que se procesan después, el documento tributario, la contingencia cuando algo falla, la impresión en cocina y la identidad. Todo es serverless: API Gateway, Lambda, DynamoDB, SQS, SNS, S3 y EventBridge.</p>
+    <div class="leyenda" aria-label="Leyenda de colores de las flechas">
+      <span><i class="muestra m-sync"></i>Camino crítico: se resuelve dentro de la petición</span>
+      <span><i class="muestra m-async"></i>Asíncrono: informa lo que ya ocurrió</span>
+      <span><i class="muestra m-cont"></i>Contingencia y fallas</span>
+      <span><i class="muestra m-neutro"></i>Descarga, respuesta o acción manual</span>
+    </div>
+    <nav aria-label="Flujos">
+      <ol>
+        <li><a href="#general">Vista general</a></li>
+        <li><a href="#comanda">Comanda</a></li>
+        <li><a href="#eventos">Eventos</a></li>
+        <li><a href="#documento">Documento tributario</a></li>
+        <li><a href="#contingencia">Contingencia</a></li>
+        <li><a href="#impresion">Impresión</a></li>
+        <li><a href="#identidad">Identidad</a></li>
+      </ol>
+    </nav>
+  </header>
+
+  <!-- 1. VISTA GENERAL -->
+  <section id="general">
+    <h2>Vista general</h2>
+    <figure>
+      <div class="lamina">
+        <svg viewBox="0 0 1260 490" role="img" aria-label="Los dispositivos del local llaman a una sola API; nueve funciones escriben en DynamoDB y cuatro funciones asíncronas procesan eventos, documentos tributarios, contingencia y tareas programadas.">
+          <!-- clientes -->
+          <rect class="caja" x="20" y="110" width="170" height="44" rx="6"/><text class="t" x="105" y="128" text-anchor="middle">Garzón · celular</text><text class="s" x="105" y="144" text-anchor="middle">PWA</text>
+          <rect class="caja" x="20" y="170" width="170" height="44" rx="6"/><text class="t" x="105" y="188" text-anchor="middle">Caja · PC</text><text class="s" x="105" y="204" text-anchor="middle">PWA + cola local</text>
+          <rect class="caja" x="20" y="230" width="170" height="44" rx="6"/><text class="t" x="105" y="248" text-anchor="middle">Impresoras</text><text class="s" x="105" y="264" text-anchor="middle">CloudPRNT</text>
+          <rect class="caja" x="20" y="290" width="170" height="44" rx="6"/><text class="t" x="105" y="308" text-anchor="middle">Plataformas</text><text class="s" x="105" y="324" text-anchor="middle">webhook · esqueleto</text>
+          <rect class="caja" x="20" y="350" width="170" height="44" rx="6"/><text class="t" x="105" y="368" text-anchor="middle">Público</text><text class="s" x="105" y="384" text-anchor="middle">reservas · esqueleto</text>
+          <!-- sitio y API -->
+          <rect class="dato" x="300" y="20" width="160" height="44" rx="6"/><text class="t" x="380" y="38" text-anchor="middle">S3 · sitio</text><text class="s" x="380" y="54" text-anchor="middle">PWA por HTTPS</text>
+          <rect class="caja borde-sync" x="300" y="110" width="160" height="284" rx="8"/>
+          <text class="t" x="380" y="136" text-anchor="middle">API Gateway</text><text class="s" x="380" y="152" text-anchor="middle">pos-api · stage prod</text>
+          <text class="s" x="380" y="196" text-anchor="middle">autorizador JWT</text><text class="s" x="380" y="211" text-anchor="middle">ID token de Google</text>
+          <text class="s" x="380" y="246" text-anchor="middle">48 rutas explícitas</text>
+          <text class="s" x="380" y="281" text-anchor="middle">límites de tasa</text>
+          <text class="s" x="380" y="316" text-anchor="middle">CORS: origen del sitio</text>
+          <text class="s" x="380" y="351" text-anchor="middle">registro de acceso</text>
+          <!-- funciones de la API -->
+          <rect class="caja" x="520" y="110" width="200" height="284" rx="8"/>
+          <text class="t" x="620" y="136" text-anchor="middle">Funciones de la API</text><text class="s" x="620" y="152" text-anchor="middle">Lambda · alias vivo</text>
+          <text class="li" x="545" y="178">salon</text><text class="li" x="545" y="200">pedidos</text><text class="li" x="545" y="222">caja</text>
+          <text class="li" x="545" y="244">administracion</text><text class="li" x="545" y="266">reportes</text><text class="li" x="545" y="288">impresion</text>
+          <text class="li" x="545" y="310">contingencia</text><text class="li" x="545" y="332">reservas</text><text class="li" x="545" y="354">pedidos-externos</text>
+          <rect class="nota" x="520" y="404" width="200" height="30" rx="6"/><text class="s" x="620" y="423" text-anchor="middle">capa pos_dominio · dominio + boto3</text>
+          <!-- datos -->
+          <rect class="dato" x="790" y="20" width="180" height="44" rx="6"/><text class="t" x="880" y="38" text-anchor="middle">S3 · archivo</text><text class="s" x="880" y="54" text-anchor="middle">JSON.gz · comprobantes</text>
+          <rect class="dato" x="790" y="110" width="180" height="60" rx="6"/><text class="t" x="880" y="133" text-anchor="middle">configuracion</text><text class="s" x="880" y="149" text-anchor="middle">DynamoDB · sin TTL</text><text class="s" x="880" y="163" text-anchor="middle">carta · personal · impresoras</text>
+          <rect class="dato" x="790" y="210" width="180" height="84" rx="6"/><text class="t" x="880" y="232" text-anchor="middle">operacion</text><text class="s" x="880" y="248" text-anchor="middle">DynamoDB · TTL · Streams</text><text class="s" x="880" y="264" text-anchor="middle">pedidos · pagos · turnos</text><text class="s" x="880" y="280" text-anchor="middle">CMD# · EVT# · DTE# · PEND#</text>
+          <rect class="cola" x="790" y="340" width="180" height="44" rx="6"/><text class="t" x="880" y="358" text-anchor="middle">Cola FIFO</text><text class="s" x="880" y="374" text-anchor="middle">contingencia-comandas.fifo</text>
+          <rect class="caja" x="790" y="420" width="180" height="44" rx="6"/><text class="t" x="880" y="438" text-anchor="middle">EventBridge</text><text class="s" x="880" y="454" text-anchor="middle">regla rate(5 minutes)</text>
+          <!-- asíncronas -->
+          <rect class="caja" x="1040" y="20" width="170" height="44" rx="6"/><text class="t" x="1125" y="38" text-anchor="middle">SNS</text><text class="s" x="1125" y="54" text-anchor="middle">dueño · alertas técnicas</text>
+          <rect class="caja borde-async" x="1040" y="110" width="170" height="44" rx="6"/><text class="t" x="1125" y="128" text-anchor="middle">procesador-eventos</text><text class="s" x="1125" y="144" text-anchor="middle">Streams · lotes</text>
+          <rect class="cola" x="1040" y="200" width="170" height="40" rx="6"/><text class="t" x="1125" y="216" text-anchor="middle">Cola dte-emision</text><text class="s" x="1125" y="231" text-anchor="middle">SQS · fallidos tras 5</text>
+          <rect class="caja borde-async" x="1040" y="270" width="170" height="44" rx="6"/><text class="t" x="1125" y="288" text-anchor="middle">emision-dte</text><text class="s" x="1125" y="304" text-anchor="middle">proveedor simulado</text>
+          <rect class="caja borde-cont" x="1040" y="340" width="170" height="44" rx="6"/><text class="t" x="1125" y="358" text-anchor="middle">drenador-contingencia</text><text class="s" x="1125" y="374" text-anchor="middle">reaplica en orden</text>
+          <rect class="caja borde-async" x="1040" y="420" width="170" height="44" rx="6"/><text class="t" x="1125" y="438" text-anchor="middle">tareas-programadas</text><text class="s" x="1125" y="454" text-anchor="middle">reintenta y avisa</text>
+          <!-- flechas: clientes -> API -->
+          <path class="l sync" d="M190,132 H300" marker-end="url(#m-sync)"/><text class="e" x="245" y="125" text-anchor="middle">comandas</text>
+          <path class="l sync" d="M190,192 H300" marker-end="url(#m-sync)"/><text class="e" x="245" y="185" text-anchor="middle">cobro y caja</text>
+          <path class="l sync" d="M190,252 H300" marker-end="url(#m-sync)"/><text class="e" x="245" y="245" text-anchor="middle">cada 5 s</text>
+          <path class="l sync" d="M190,312 H300" marker-end="url(#m-sync)"/><text class="e" x="245" y="305" text-anchor="middle">firma HMAC</text>
+          <path class="l sync" d="M190,372 H300" marker-end="url(#m-sync)"/><text class="e" x="245" y="365" text-anchor="middle">sin token</text>
+          <path class="l neutro" d="M300,42 H105 V110" marker-end="url(#m-neutro)"/><text class="e" x="200" y="35" text-anchor="middle">descarga la PWA</text>
+          <!-- API -> funciones -> datos -->
+          <path class="l sync" d="M460,252 H520" marker-end="url(#m-sync)"/><text class="e" x="490" y="245" text-anchor="middle">invoca</text>
+          <path class="l sync" d="M720,140 H790" marker-end="url(#m-sync)"/><text class="e" x="755" y="133" text-anchor="middle">lee</text>
+          <path class="l sync" d="M720,252 H790" marker-end="url(#m-sync)"/><text class="e" x="755" y="245" text-anchor="middle">transacción</text>
+          <path class="l cont" d="M720,362 H790" marker-end="url(#m-cont)"/><text class="e" x="755" y="355" text-anchor="middle">si falla</text>
+          <!-- asíncrono -->
+          <path class="l async" d="M970,238 L1040,140" marker-end="url(#m-async)"/><text class="e" x="998" y="186" text-anchor="end">Streams</text>
+          <path class="l async" d="M1125,110 V64" marker-end="url(#m-async)"/><text class="e" x="1133" y="92">avisos</text>
+          <path class="l async" d="M1040,118 L970,50" marker-end="url(#m-async)"/><text class="e" x="1012" y="82">archiva</text>
+          <path class="l async" d="M1125,154 V200" marker-end="url(#m-async)"/><text class="e" x="1133" y="181">venta.cerrada</text>
+          <path class="l async" d="M1125,240 V270" marker-end="url(#m-async)"/>
+          <path class="l async" d="M1040,292 L970,276" marker-end="url(#m-async)"/><text class="e" x="1005" y="270" text-anchor="middle">DTE + boleta</text>
+          <path class="l cont" d="M970,362 H1040" marker-end="url(#m-cont)"/><text class="e" x="1005" y="355" text-anchor="middle">en orden</text>
+          <path class="l cont" d="M1058,340 L940,294" marker-end="url(#m-cont)"/><text class="e" x="968" y="331" text-anchor="end">reaplica</text>
+          <path class="l async" d="M970,442 H1040" marker-end="url(#m-async)"/><text class="e" x="1005" y="435" text-anchor="middle">cada 5 min</text>
+          <path class="l async" d="M1210,442 H1236 V220 H1210" marker-end="url(#m-async)"/><text class="e" x="1250" y="331" text-anchor="middle" transform="rotate(-90 1250 331)">reencola atascados</text>
+        </svg>
+      </div>
+      <figcaption>Todos los dispositivos hablan con una sola API. Las funciones de la API son las únicas que deciden; lo que está a la derecha de <code>operacion</code> solo reacciona a lo que ya quedó escrito.</figcaption>
+    </figure>
+    <ul class="notas">
+      <li><strong>Sin servidor en el local.</strong> Celulares, PC de caja e impresoras se conectan directo a AWS por internet. Sin internet no se vende, salvo la cola local del PC de caja.</li>
+      <li><strong>Dos tablas por dueño del dato.</strong> <code>configuracion</code> es lo que define el local; <code>operacion</code> es lo que pasa en el servicio, con TTL y Streams.</li>
+      <li><strong>Rutas sin token.</strong> <code>/salud</code>, las impresoras (clave propia), los webhooks (firma HMAC) y las reservas públicas (límite de tasa estricto).</li>
+    </ul>
+  </section>
+
+  <!-- 2. COMANDA (CAMINO CRÍTICO) -->
+  <section id="comanda">
+    <h2>Comanda: el camino crítico</h2>
+    <figure>
+      <div class="lamina">
+        <svg viewBox="0 0 1080 590" role="img" aria-label="Agregar un ítem: el API Gateway valida el token, la función lee el rol, revisa si el comando ya se aplicó, lee el pedido, decide y escribe todo en una sola transacción antes de responder.">
+          <rect class="caja" x="20" y="20" width="160" height="40" rx="6"/><text class="t" x="100" y="38" text-anchor="middle">PWA</text><text class="s" x="100" y="53" text-anchor="middle">garzón</text>
+          <rect class="caja borde-sync" x="240" y="20" width="160" height="40" rx="6"/><text class="t" x="320" y="38" text-anchor="middle">API Gateway</text><text class="s" x="320" y="53" text-anchor="middle">autorizador JWT</text>
+          <rect class="caja" x="460" y="20" width="160" height="40" rx="6"/><text class="t" x="540" y="38" text-anchor="middle">pedidos</text><text class="s" x="540" y="53" text-anchor="middle">Lambda</text>
+          <rect class="dato" x="690" y="20" width="160" height="40" rx="6"/><text class="t" x="770" y="38" text-anchor="middle">configuracion</text><text class="s" x="770" y="53" text-anchor="middle">DynamoDB</text>
+          <rect class="dato" x="900" y="20" width="160" height="40" rx="6"/><text class="t" x="980" y="38" text-anchor="middle">operacion</text><text class="s" x="980" y="53" text-anchor="middle">DynamoDB</text>
+          <path class="vida" d="M100,60 V578 M320,60 V578 M540,60 V578 M770,60 V578 M980,60 V578"/>
+          <path class="l sync" d="M100,100 H320" marker-end="url(#m-sync)"/>
+          <text class="e" x="210" y="80" text-anchor="middle">POST …/pedidos/{id}/items</text><text class="e" x="210" y="94" text-anchor="middle">ID token + X-Command-Id</text>
+          <rect class="nota" x="328" y="120" width="200" height="30" rx="4"/><text class="s" x="428" y="139" text-anchor="middle">valida firma · iss · aud · exp</text>
+          <text class="e rojo" x="428" y="168" text-anchor="middle">token inválido → 401 sin llegar a la función</text>
+          <path class="l sync" d="M320,200 H540" marker-end="url(#m-sync)"/><text class="e" x="430" y="193" text-anchor="middle">evento 2.0 + claims</text>
+          <path class="l sync" d="M540,250 H770" marker-end="url(#m-sync)"/><text class="e" x="655" y="243" text-anchor="middle">USER#sub → cliente y rol</text><text class="s" x="655" y="266" text-anchor="middle">en memoria hasta 60 s</text>
+          <path class="l sync" d="M540,300 H980" marker-end="url(#m-sync)"/><text class="e" x="760" y="293" text-anchor="middle">GetItem CMD# · ¿este comando ya se aplicó?</text>
+          <path class="l sync" d="M540,345 H980" marker-end="url(#m-sync)"/><text class="e" x="760" y="338" text-anchor="middle">Query del pedido (lectura consistente)</text>
+          <rect class="nota" x="548" y="366" width="236" height="32" rx="4"/><text class="s" x="666" y="386" text-anchor="middle">el dominio valida y decide (código puro)</text>
+          <path class="l sync" d="M540,440 H980" marker-end="url(#m-sync)"/><text class="e" x="760" y="426" text-anchor="middle">TransactWriteItems</text><text class="s" x="760" y="458" text-anchor="middle">CMD# + ITEM + PEDIDO (versión + 1) + EVT#</text>
+          <path class="l neutro" d="M980,495 H540" marker-end="url(#m-neutro)"/><text class="e" x="760" y="488" text-anchor="middle">ok · o cancelada con su motivo</text>
+          <path class="l neutro" d="M540,550 H100" marker-end="url(#m-neutro)"/><text class="e" x="320" y="543" text-anchor="middle">201 · 409/422 negocio · 202 contingencia</text>
+        </svg>
+      </div>
+      <figcaption>La respuesta llega después de completar la transacción. Si el comando ya existía, se devuelve la respuesta guardada sin escribir nada.</figcaption>
+    </figure>
+    <ul class="notas">
+      <li><strong>Una sola transacción.</strong> El estado, el comando (<code>CMD#</code>, 48 h) y su evento (<code>EVT#</code>, 7 días) se escriben juntos o no se escribe nada. Al enviar una tanda, en la misma transacción van los trabajos de impresión.</li>
+      <li><strong>Versión del pedido.</strong> Si otra persona cambió el pedido entre la lectura y la escritura, la condición falla y la función relee y decide una vez más.</li>
+      <li><strong>Cómo se clasifica un rechazo.</strong> Una condición de negocio responde 409 o 422. Una limitación, error interno o tiempo agotado de DynamoDB es infraestructura: <code>pedidos</code> encola el comando y responde 202.</li>
+    </ul>
+  </section>
+
+  <!-- 3. EVENTOS -->
+  <section id="eventos">
+    <h2>Eventos: lo que pasa después</h2>
+    <figure>
+      <div class="lamina">
+        <svg viewBox="0 0 1080 400" role="img" aria-label="Cada evento escrito en la transacción llega por DynamoDB Streams al procesador, que aplica cinco efectos idempotentes; si un lote falla, se reintenta desde ese registro y tras diez intentos va a una cola de fallidos.">
+          <rect class="dato" x="20" y="170" width="180" height="60" rx="6"/><text class="t" x="110" y="196" text-anchor="middle">TransactWriteItems</text><text class="s" x="110" y="212" text-anchor="middle">estado + CMD# + EVT#</text>
+          <rect class="dato" x="260" y="170" width="170" height="60" rx="6"/><text class="t" x="345" y="196" text-anchor="middle">DynamoDB Streams</text><text class="s" x="345" y="212" text-anchor="middle">operacion · NEW_IMAGE</text>
+          <rect class="caja borde-async" x="500" y="170" width="170" height="60" rx="6"/><text class="t" x="585" y="196" text-anchor="middle">procesador-eventos</text><text class="s" x="585" y="212" text-anchor="middle">lotes · fallos parciales</text>
+          <path class="l async" d="M200,200 H260" marker-end="url(#m-async)"/><text class="e" x="230" y="193" text-anchor="middle">INSERT</text>
+          <path class="l async" d="M430,200 H500" marker-end="url(#m-async)"/><text class="e" x="465" y="193" text-anchor="middle">solo EVT#</text>
+          <rect class="caja" x="760" y="20" width="300" height="56" rx="6"/><text class="t" x="910" y="44" text-anchor="middle">Agregados del turno y del día</text><text class="s" x="910" y="61" text-anchor="middle">ADD + marca PROC# en la misma transacción</text>
+          <rect class="dato" x="760" y="95" width="300" height="56" rx="6"/><text class="t" x="910" y="119" text-anchor="middle">Archivo histórico en S3</text><text class="s" x="910" y="136" text-anchor="middle">tenant=… / fecha=… · lo consulta Athena</text>
+          <rect class="dato" x="760" y="170" width="300" height="56" rx="6"/><text class="t" x="910" y="194" text-anchor="middle">Comprobante HTML en S3</text><text class="s" x="910" y="211" text-anchor="middle">solo venta.cerrada · clave por venta</text>
+          <rect class="cola" x="760" y="245" width="300" height="56" rx="6"/><text class="t" x="910" y="269" text-anchor="middle">Cola dte-emision</text><text class="s" x="910" y="286" text-anchor="middle">solo venta.cerrada · la emisión es idempotente</text>
+          <rect class="caja" x="760" y="320" width="300" height="56" rx="6"/><text class="t" x="910" y="344" text-anchor="middle">Avisos por SNS</text><text class="s" x="910" y="361" text-anchor="middle">marca PROC# después de publicar</text>
+          <path class="l async" d="M670,200 C715,200 715,48 760,48" marker-end="url(#m-async)"/>
+          <path class="l async" d="M670,200 C715,200 715,123 760,123" marker-end="url(#m-async)"/>
+          <path class="l async" d="M670,200 H760" marker-end="url(#m-async)"/>
+          <path class="l async" d="M670,200 C715,200 715,273 760,273" marker-end="url(#m-async)"/>
+          <path class="l async" d="M670,200 C715,200 715,348 760,348" marker-end="url(#m-async)"/>
+          <rect class="cola" x="480" y="320" width="210" height="56" rx="6"/><text class="t" x="585" y="344" text-anchor="middle">procesador-eventos-fallidos</text><text class="s" x="585" y="361" text-anchor="middle">SQS · tras 10 reintentos</text>
+          <path class="l cont" d="M585,230 V320" marker-end="url(#m-cont)"/><text class="e rojo" x="577" y="270" text-anchor="end">si falla: reintenta</text><text class="e rojo" x="577" y="285" text-anchor="end">desde ese registro</text>
+        </svg>
+      </div>
+      <figcaption>El flujo de eventos informa lo que ya ocurrió; nunca decide si una venta ocurre. Cada efecto se puede repetir sin contar dos veces.</figcaption>
+    </figure>
+    <ul class="notas">
+      <li><strong>Doble filtro.</strong> El disparador entrega solo inserciones de ítems <code>EVT#</code>, y el código igual descarta cualquier otro tipo de ítem.</li>
+      <li><strong>Idempotencia por <code>event_id</code>.</strong> Los agregados llevan una marca con condición; S3 usa claves deterministas; SNS marca después de publicar (puede duplicar un correo, nunca perderlo).</li>
+      <li><strong>Reportes, no arqueo.</strong> Estos agregados alimentan los reportes. El arqueo usa totales que se suman en la misma transacción de cada pago.</li>
+    </ul>
+  </section>
+
+  <!-- 4. DOCUMENTO TRIBUTARIO -->
+  <section id="documento">
+    <h2>Documento tributario</h2>
+    <figure>
+      <div class="lamina">
+        <svg viewBox="0 0 1080 360" role="img" aria-label="Al finalizar la venta el documento nace pendiente; emision-dte lo pasa a enviando y termina en emitido, rechazado o fallido; las fallas transitorias se reintentan con espera creciente y un fallido se puede reenviar a mano.">
+          <rect class="caja" x="20" y="150" width="160" height="50" rx="6"/><text class="t" x="100" y="171" text-anchor="middle">finalizar venta</text><text class="s" x="100" y="187" text-anchor="middle">caja</text>
+          <rect class="caja" x="250" y="150" width="130" height="50" rx="25"/><text class="t" x="315" y="180" text-anchor="middle">pendiente</text>
+          <rect class="caja borde-async" x="480" y="150" width="130" height="50" rx="25"/><text class="t" x="545" y="180" text-anchor="middle">enviando</text>
+          <rect class="caja borde-sync" x="730" y="50" width="150" height="50" rx="25"/><text class="t" x="805" y="71" text-anchor="middle">emitido</text><text class="s" x="805" y="87" text-anchor="middle">folio + timbre</text>
+          <rect class="caja" x="730" y="150" width="150" height="50" rx="25"/><text class="t" x="805" y="171" text-anchor="middle">rechazado</text><text class="s" x="805" y="187" text-anchor="middle">aviso al dueño</text>
+          <rect class="caja borde-cont" x="730" y="250" width="150" height="50" rx="25"/><text class="t" x="805" y="271" text-anchor="middle">fallido</text><text class="s" x="805" y="287" text-anchor="middle">cola de fallidos</text>
+          <rect class="caja" x="930" y="50" width="140" height="50" rx="6"/><text class="t" x="1000" y="71" text-anchor="middle">boleta impresa</text><text class="s" x="1000" y="87" text-anchor="middle">impresora de caja</text>
+          <rect class="caja" x="240" y="270" width="150" height="44" rx="6"/><text class="t" x="315" y="290" text-anchor="middle">tareas-programadas</text><text class="s" x="315" y="305" text-anchor="middle">cada 5 min</text>
+          <path class="l sync" d="M180,175 H250" marker-end="url(#m-sync)"/><text class="e" x="215" y="168" text-anchor="middle">crea</text>
+          <path class="l async" d="M380,175 H480" marker-end="url(#m-async)"/><text class="e" x="430" y="168" text-anchor="middle">emision-dte</text>
+          <path class="l async" d="M610,165 L730,75" marker-end="url(#m-async)"/><text class="e" x="660" y="112" text-anchor="end">acepta</text>
+          <path class="l async" d="M610,175 H730" marker-end="url(#m-async)"/><text class="e" x="670" y="168" text-anchor="middle">rechazo</text>
+          <path class="l cont" d="M610,185 L730,275" marker-end="url(#m-cont)"/><text class="e rojo" x="660" y="250" text-anchor="end">5.ª recepción</text>
+          <path class="l cont" d="M520,150 C520,96 570,96 570,150" marker-end="url(#m-cont)"/>
+          <text class="e rojo" x="545" y="76" text-anchor="middle">429 · 5xx · tiempo agotado</text><text class="s" x="545" y="91" text-anchor="middle">espera 30 · 60 · 120 · 240 s</text>
+          <path class="l async" d="M880,75 H930" marker-end="url(#m-async)"/><text class="e" x="905" y="68" text-anchor="middle">imprime</text>
+          <path class="l neutro" d="M730,290 C620,340 560,320 545,200" marker-end="url(#m-neutro)"/><text class="e" x="640" y="348" text-anchor="middle">reenvío manual desde la cola de fallidos</text>
+          <path class="l async" d="M315,270 V200" marker-end="url(#m-async)"/><text class="e" x="307" y="240" text-anchor="end">reencola si 15 min</text><text class="e" x="307" y="254" text-anchor="end">sin intentos</text>
+        </svg>
+      </div>
+      <figcaption>El cobro nunca espera al documento. El documento nace <code>pendiente</code> en la misma transacción que cierra la venta, y se emite después.</figcaption>
+    </figure>
+    <ul class="notas">
+      <li><strong>Folio.</strong> Contador atómico por cliente y tipo (boleta o factura). Un reintento reutiliza el folio ya asignado.</li>
+      <li><strong>Proveedor detrás de un puerto.</strong> <code>DTE_MODO</code> simula ok, lento, timeout, error5xx, limite429 y rechazo. Cambiar al proveedor real no toca el dominio.</li>
+      <li><strong>Idempotente por venta.</strong> Un mensaje repetido no emite dos veces ni imprime dos boletas: el trabajo de impresión tiene clave fija <code>DTE-&lt;venta&gt;</code>.</li>
+    </ul>
+  </section>
+
+  <!-- 5. CONTINGENCIA -->
+  <section id="contingencia">
+    <h2>Contingencia</h2>
+    <figure>
+      <div class="lamina">
+        <svg viewBox="0 0 1100 370" role="img" aria-label="Tres entradas de contingencia: si DynamoDB falla, pedidos encola; si la ruta normal falla, la PWA usa la función contingencia; sin internet, el PC de caja guarda en una cola local y reenvía por la ruta de contingencia. El drenador reaplica en orden y cada comando termina aplicado, retenido para imprimir, en conflicto o reintentándose.">
+          <text class="lane" x="20" y="50">A · DynamoDB falla dentro de AWS</text>
+          <rect class="caja" x="20" y="60" width="140" height="44" rx="6"/><text class="t" x="90" y="78" text-anchor="middle">PWA</text><text class="s" x="90" y="94" text-anchor="middle">garzón o caja</text>
+          <rect class="caja" x="220" y="60" width="150" height="44" rx="6"/><text class="t" x="295" y="78" text-anchor="middle">pedidos</text><text class="s" x="295" y="94" text-anchor="middle">falla de infraestructura</text>
+          <path class="l sync" d="M160,82 H220" marker-end="url(#m-sync)"/><text class="e" x="190" y="75" text-anchor="middle">comanda</text>
+          <text class="lane" x="20" y="170">B · la ruta normal falla: 5xx, 429 o tiempo agotado tras un reintento</text>
+          <rect class="caja" x="20" y="180" width="140" height="44" rx="6"/><text class="t" x="90" y="198" text-anchor="middle">PWA</text><text class="s" x="90" y="214" text-anchor="middle">mismo X-Command-Id</text>
+          <rect class="caja borde-cont" x="220" y="180" width="150" height="44" rx="6"/><text class="t" x="295" y="198" text-anchor="middle">contingencia</text><text class="s" x="295" y="214" text-anchor="middle">no toca DynamoDB</text>
+          <path class="l cont" d="M160,202 H220" marker-end="url(#m-cont)"/><text class="e" x="190" y="195" text-anchor="middle">reenvía</text>
+          <text class="lane" x="20" y="290">C · sin internet en el local (solo el PC de caja)</text>
+          <rect class="caja" x="20" y="300" width="140" height="44" rx="6"/><text class="t" x="90" y="318" text-anchor="middle">PC de caja</text><text class="s" x="90" y="334" text-anchor="middle">sin conexión</text>
+          <rect class="dato" x="220" y="300" width="150" height="44" rx="6"/><text class="t" x="295" y="318" text-anchor="middle">cola local</text><text class="s" x="295" y="334" text-anchor="middle">IndexedDB, en orden</text>
+          <rect class="caja" x="430" y="300" width="170" height="44" rx="6"/><text class="t" x="515" y="318" text-anchor="middle">ruta de contingencia</text><text class="s" x="515" y="334" text-anchor="middle">cuando /salud responde</text>
+          <path class="l neutro" d="M160,322 H220" marker-end="url(#m-neutro)"/><text class="e" x="190" y="315" text-anchor="middle">guarda</text>
+          <path class="l sync" d="M370,322 H430" marker-end="url(#m-sync)"/><text class="e" x="400" y="315" text-anchor="middle">envía</text>
+          <text class="s" x="614" y="317">duplicados: los descarta CMD#</text><text class="s" x="614" y="332">rechazos: bandeja de conflictos</text>
+          <rect class="cola" x="450" y="100" width="200" height="64" rx="6"/><text class="t" x="550" y="122" text-anchor="middle">contingencia-comandas.fifo</text><text class="s" x="550" y="139" text-anchor="middle">grupo: local#mesa</text><text class="s" x="550" y="154" text-anchor="middle">deduplicación: command_id</text>
+          <path class="l cont" d="M370,82 L450,118" marker-end="url(#m-cont)"/><text class="e rojo" x="408" y="85" text-anchor="middle">encola · 202</text>
+          <path class="l cont" d="M370,202 L450,146" marker-end="url(#m-cont)"/><text class="e rojo" x="412" y="200" text-anchor="middle">encola · 202</text>
+          <rect class="caja borde-cont" x="720" y="102" width="170" height="60" rx="6"/><text class="t" x="805" y="126" text-anchor="middle">drenador-contingencia</text><text class="s" x="805" y="142" text-anchor="middle">mismo dominio · origen contingencia</text>
+          <path class="l cont" d="M650,132 H720" marker-end="url(#m-cont)"/><text class="e" x="685" y="125" text-anchor="middle">en orden</text>
+          <rect class="caja borde-sync" x="940" y="20" width="150" height="52" rx="6"/><text class="t" x="1015" y="42" text-anchor="middle">aplicado</text><text class="s" x="1015" y="58" text-anchor="middle">CMD# evita duplicados</text>
+          <rect class="caja" x="940" y="90" width="150" height="52" rx="6"/><text class="t" x="1015" y="112" text-anchor="middle">impresión retenida</text><text class="s" x="1015" y="128" text-anchor="middle">la caja libera o descarta</text>
+          <rect class="caja borde-cont" x="940" y="160" width="150" height="52" rx="6"/><text class="t" x="1015" y="182" text-anchor="middle">conflicto</text><text class="s" x="1015" y="198" text-anchor="middle">CONFLICTO# + aviso</text>
+          <rect class="caja" x="940" y="230" width="150" height="52" rx="6"/><text class="t" x="1015" y="252" text-anchor="middle">DynamoDB sigue caído</text><text class="s" x="1015" y="268" text-anchor="middle">reintenta ~90 min</text>
+          <text class="s" x="1015" y="300" text-anchor="middle">luego: fallidos FIFO + alarma</text>
+          <path class="l sync" d="M890,132 C915,132 915,46 940,46" marker-end="url(#m-sync)"/>
+          <path class="l neutro" d="M890,132 C915,132 915,116 940,116" marker-end="url(#m-neutro)"/>
+          <path class="l cont" d="M890,132 C915,132 915,186 940,186" marker-end="url(#m-cont)"/>
+          <path class="l cont" d="M890,132 C915,132 915,256 940,256" marker-end="url(#m-cont)"/>
+        </svg>
+      </div>
+      <figcaption>Tres entradas, una sola forma de reaplicar. Nunca se usa la contingencia ante un rechazo de negocio (4xx distinto de 429).</figcaption>
+    </figure>
+    <ul class="notas">
+      <li><strong>Pedido nuevo en plena falla.</strong> La PWA propone el ULID del pedido y de cada ítem, así puede seguir agregando a una mesa que todavía no existe en la nube.</li>
+      <li><strong>Impresión en contingencia.</strong> Durante la falla la nube no imprime; la PWA muestra «registrada, no impresa». Al drenar, los trabajos quedan retenidos para no duplicar en cocina lo que ya se atendió en papel.</li>
+      <li><strong>Celulares sin internet.</strong> No guardan nada: muestran «Sin conexión: usa la caja».</li>
+    </ul>
+  </section>
+
+  <!-- 6. IMPRESIÓN -->
+  <section id="impresion">
+    <h2>Impresión desde la nube</h2>
+    <figure>
+      <div class="lamina">
+        <svg viewBox="0 0 1080 260" role="img" aria-label="Tres orígenes dejan trabajos pendientes por impresora; la impresora consulta cada pocos segundos, descarga el trabajo y confirma, y el trabajo pasa a hecho.">
+          <rect class="caja" x="20" y="40" width="190" height="44" rx="6"/><text class="t" x="115" y="58" text-anchor="middle">enviar tanda</text><text class="s" x="115" y="74" text-anchor="middle">comanda al cuarto</text>
+          <rect class="caja" x="20" y="110" width="190" height="44" rx="6"/><text class="t" x="115" y="128" text-anchor="middle">emision-dte</text><text class="s" x="115" y="144" text-anchor="middle">boleta a la caja</text>
+          <rect class="caja" x="20" y="180" width="190" height="44" rx="6"/><text class="t" x="115" y="198" text-anchor="middle">caja libera retenida</text><text class="s" x="115" y="214" text-anchor="middle">tras una contingencia</text>
+          <rect class="dato" x="290" y="40" width="210" height="200" rx="6"/>
+          <text class="t" x="395" y="66" text-anchor="middle">operacion</text><text class="s" x="395" y="82" text-anchor="middle">IMP#&lt;impresora&gt;</text><text class="s" x="395" y="100" text-anchor="middle">PEND#trabajo · pendientes</text>
+          <path class="div" d="M305,140 H485"/>
+          <text class="s" x="395" y="166" text-anchor="middle">HECHO#trabajo</text><text class="s" x="395" y="182" text-anchor="middle">se borra solo a los 7 días</text>
+          <path class="l sync" d="M210,62 L290,90" marker-end="url(#m-sync)"/>
+          <path class="l sync" d="M210,132 H290" marker-end="url(#m-sync)"/><text class="e" x="250" y="125" text-anchor="middle">crea</text>
+          <path class="l sync" d="M210,202 L290,170" marker-end="url(#m-sync)"/>
+          <rect class="caja" x="600" y="40" width="170" height="200" rx="6"/><text class="t" x="685" y="66" text-anchor="middle">impresion</text><text class="s" x="685" y="82" text-anchor="middle">Lambda · sin JWT</text><text class="s" x="685" y="98" text-anchor="middle">Basic: id + clave</text>
+          <rect class="caja" x="880" y="40" width="180" height="200" rx="6"/><text class="t" x="970" y="66" text-anchor="middle">Impresora</text><text class="s" x="970" y="82" text-anchor="middle">CloudPRNT</text><text class="s" x="970" y="98" text-anchor="middle">o el simulador</text>
+          <path class="l sync" d="M600,112 H500" marker-end="url(#m-sync)"/><text class="e" x="550" y="105" text-anchor="middle">Query PEND#</text>
+          <path class="l sync" d="M600,200 H500" marker-end="url(#m-sync)"/><text class="e" x="550" y="193" text-anchor="middle">PEND → HECHO</text>
+          <path class="l sync" d="M880,124 H770" marker-end="url(#m-sync)"/><text class="e" x="825" y="119" text-anchor="middle">1 · POST estado · 5 s</text>
+          <path class="l neutro" d="M770,148 H880" marker-end="url(#m-neutro)"/><text class="e" x="825" y="143" text-anchor="middle">2 · jobReady + token</text>
+          <path class="l sync" d="M880,172 H770" marker-end="url(#m-sync)"/><text class="e" x="825" y="167" text-anchor="middle">3 · GET ?token</text>
+          <path class="l neutro" d="M770,196 H880" marker-end="url(#m-neutro)"/><text class="e" x="825" y="191" text-anchor="middle">4 · texto 42 col.</text>
+          <path class="l sync" d="M880,220 H770" marker-end="url(#m-sync)"/><text class="e" x="825" y="215" text-anchor="middle">5 · DELETE ?code=200</text>
+        </svg>
+      </div>
+      <figcaption>Las impresoras no reciben conexiones: preguntan a la nube por HTTPS. Mientras la impresora no confirma, el trabajo sigue pendiente.</figcaption>
+    </figure>
+    <ul class="notas">
+      <li><strong>Clave por impresora.</strong> Aleatoria, guardada con hash y comparada en tiempo constante. Se rota desde administración.</li>
+      <li><strong>Errores de la impresora.</strong> Un <code>code</code> que no empieza en 2 deja el trabajo pendiente para reintentar; al 5.º error se cierra como <code>error</code>.</li>
+      <li><strong>Impresora apagada.</strong> Si un trabajo lleva más de 10 minutos pendiente, <code>tareas-programadas</code> avisa al equipo técnico.</li>
+    </ul>
+  </section>
+
+  <!-- 7. IDENTIDAD -->
+  <section id="identidad">
+    <h2>Identidad y permisos</h2>
+    <figure>
+      <div class="lamina">
+        <svg viewBox="0 0 1080 290" role="img" aria-label="Google entrega el ID token a la PWA; el autorizador del API Gateway lo valida; la función exige email verificado y lee la membresía de la persona en el local de la ruta, de donde salen el cliente y el rol.">
+          <text class="e rojo" x="525" y="76" text-anchor="middle">inválido → 401</text>
+          <text class="e rojo" x="745" y="76" text-anchor="middle">sin verificar → 403</text>
+          <text class="e rojo" x="970" y="76" text-anchor="middle">sin acceso al local → 403</text>
+          <rect class="caja" x="20" y="90" width="150" height="52" rx="6"/><text class="t" x="95" y="112" text-anchor="middle">Google</text><text class="s" x="95" y="128" text-anchor="middle">Identity Services</text>
+          <rect class="caja" x="230" y="90" width="150" height="52" rx="6"/><text class="t" x="305" y="112" text-anchor="middle">PWA</text><text class="s" x="305" y="128" text-anchor="middle">token solo en memoria</text>
+          <rect class="caja borde-sync" x="440" y="90" width="170" height="52" rx="6"/><text class="t" x="525" y="112" text-anchor="middle">autorizador JWT</text><text class="s" x="525" y="128" text-anchor="middle">firma · iss · aud · exp</text>
+          <rect class="caja" x="670" y="90" width="150" height="52" rx="6"/><text class="t" x="745" y="112" text-anchor="middle">función</text><text class="s" x="745" y="128" text-anchor="middle">email verificado</text>
+          <rect class="dato" x="880" y="90" width="180" height="52" rx="6"/><text class="t" x="970" y="112" text-anchor="middle">USER#sub</text><text class="s" x="970" y="128" text-anchor="middle">perfil + membresías</text>
+          <path class="l sync" d="M170,116 H230" marker-end="url(#m-sync)"/><text class="e" x="200" y="109" text-anchor="middle">ID token</text>
+          <path class="l sync" d="M380,116 H440" marker-end="url(#m-sync)"/><text class="e" x="410" y="109" text-anchor="middle">Bearer</text>
+          <path class="l sync" d="M610,116 H670" marker-end="url(#m-sync)"/><text class="e" x="640" y="109" text-anchor="middle">claims</text>
+          <path class="l sync" d="M820,116 H880" marker-end="url(#m-sync)"/><text class="e" x="850" y="109" text-anchor="middle">consulta</text>
+          <text class="s" x="305" y="162" text-anchor="middle">se renueva al minuto 50</text>
+          <text class="s" x="525" y="162" text-anchor="middle">aud = ID de cliente (pendiente)</text>
+          <rect class="caja" x="670" y="210" width="150" height="52" rx="6"/><text class="t" x="745" y="232" text-anchor="middle">primer ingreso</text><text class="s" x="745" y="248" text-anchor="middle">invitación por email</text>
+          <rect class="caja borde-sync" x="880" y="210" width="180" height="52" rx="6"/><text class="t" x="970" y="232" text-anchor="middle">rol en ese local</text><text class="s" x="970" y="248" text-anchor="middle">matriz de roles → operación</text>
+          <path class="l sync" d="M970,142 V210" marker-end="url(#m-sync)"/><text class="e" x="978" y="180">local de la ruta</text>
+          <path class="l neutro" d="M820,222 L900,142" marker-end="url(#m-neutro)"/><text class="e" x="866" y="196" text-anchor="end">crea membresía</text>
+        </svg>
+      </div>
+      <figcaption>El token solo dice quién es la persona. El cliente y el rol se leen siempre de <code>configuracion</code>, nunca del token ni de la petición.</figcaption>
+    </figure>
+    <ul class="notas">
+      <li><strong>Una membresía por local.</strong> El dueño puede tener varios locales; admin y funcionarios son por local. El local de la ruta solo elige cuál membresía usar.</li>
+      <li><strong>Código de autorización presencial.</strong> PBKDF2-SHA256 con sal por persona, comparación en tiempo constante y bloqueo de 15 minutos tras 5 intentos fallidos.</li>
+      <li><strong>PC de caja compartido.</strong> Sin selección automática de cuenta; al cerrar turno se desactiva para que el siguiente no entre con la cuenta anterior.</li>
+    </ul>
+  </section>
+
+  <footer>Fuente: <code>docs/migracion/</code> en la rama <code>feature/migracion-lambdas</code> (modelo de datos en 01, rutas y configuración en 02, despliegue en 03).</footer>
+</div>

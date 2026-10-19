@@ -1,0 +1,1 @@
+{"name": "MISE POS", "short_name": "MISE", "start_url": "./index.html", "scope": "./", "display": "standalone", "background_color": "#fafafa", "theme_color": "#0a0a0a", "icons": [{"src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml"}, {"src": "./mise-logo.png", "sizes": "192x192", "type": "image/png"}]}

@@ -1,0 +1,33 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /yo",
+  "rawPath": "/yo",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "pathParameters": {},
+  "queryStringParameters": null,
+  "requestContext": {
+    "requestId": "prueba-consola",
+    "routeKey": "GET /yo",
+    "http": {
+      "method": "GET",
+      "path": "/yo",
+      "sourceIp": "203.0.113.10"
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "mock-garzon",
+          "email": "mock-garzon@demo.invalid",
+          "email_verified": "true",
+          "name": "mock-garzon",
+          "iss": "https://accounts.google.com"
+        },
+        "scopes": null
+      }
+    }
+  },
+  "body": null,
+  "isBase64Encoded": false
+}

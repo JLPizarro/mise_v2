@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Obtener ID token</title>
+<!--
+  Página de prueba para conseguir un ID token real de Google y validar el despliegue antes de tener
+  la PWA. Se usa en http://localhost:8000 (python -m http.server 8000 desde scripts/) o desde el
+  bucket del sitio. El origen debe estar registrado en el cliente OAuth de Google Cloud.
+
+  El token vive solo en memoria de esta página (no se guarda en localStorage ni sessionStorage).
+  El ID de cliente sí se recuerda en localStorage para no pegarlo cada vez: no es un secreto.
+-->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root { --fondo:#fafaf9; --texto:#1c1917; --suave:#57534e; --borde:#d6d3d1; --acento:#0f766e; --error:#b91c1c; }
+  @media (prefers-color-scheme: dark) { :root { --fondo:#1c1917; --texto:#f5f5f4; --suave:#a8a29e; --borde:#44403c; --acento:#2dd4bf; --error:#f87171; } }
+  body { margin:0; padding:24px 16px; background:var(--fondo); color:var(--texto); font:16px/1.5 system-ui, sans-serif; }
+  main { max-width:720px; margin:auto; }
+  label { display:block; font-weight:600; margin:16px 0 4px; }
+  input, textarea { width:100%; box-sizing:border-box; padding:8px; border:1px solid var(--borde); border-radius:6px;
+                    background:transparent; color:inherit; font:14px ui-monospace, monospace; }
+  textarea { height:120px; }
+  button { margin-top:8px; padding:8px 14px; border:1px solid var(--acento); border-radius:6px; background:var(--acento);
+           color:var(--fondo); font-weight:600; cursor:pointer; }
+  dl { display:grid; grid-template-columns:max-content 1fr; gap:4px 12px; }
+  dt { color:var(--suave); } dd { margin:0; word-break:break-all; }
+  .error { color:var(--error); } p { color:var(--suave); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Obtener ID token de Google</h1>
+  <p>Para <code>scripts/validar_despliegue.py</code>. Copia el token y ponlo en la variable <code>POS_ID_TOKEN</code>.
+     Dura alrededor de una hora.</p>
+
+  <label for="cliente">ID de cliente OAuth (web)</label>
+  <input id="cliente" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off">
+  <button id="iniciar" type="button">Iniciar sesión con Google</button>
+  <div id="boton"></div>
+  <p id="mensaje" class="error" role="alert"></p>
+
+  <section id="resultado" hidden>
+    <h2>Token</h2>
+    <dl>
+      <dt>Emisor (iss)</dt><dd id="iss"></dd>
+      <dt>Audiencia (aud)</dt><dd id="aud"></dd>
+      <dt>Email</dt><dd id="email"></dd>
+      <dt>Verificado</dt><dd id="verificado"></dd>
+      <dt>Vence</dt><dd id="vence"></dd>
+    </dl>
+    <label for="token">ID token</label>
+    <textarea id="token" readonly></textarea>
+    <button id="copiar" type="button">Copiar token</button>
+  </section>
+</main>
+<script>
+  const entrada = document.getElementById("cliente");
+  const mensaje = document.getElementById("mensaje");
+  try { entrada.value = localStorage.getItem("pos.client_id") || ""; } catch { /* sin almacenamiento: no pasa nada */ }
+
+  function decodificar(jwt) {
+    const carga = jwt.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(decodeURIComponent(escape(atob(carga))));
+  }
+
+  function recibir(respuesta) {
+    const datos = decodificar(respuesta.credential);
+    document.getElementById("iss").textContent = datos.iss;
+    document.getElementById("aud").textContent = datos.aud;
+    document.getElementById("email").textContent = datos.email;
+    document.getElementById("verificado").textContent = String(datos.email_verified);
+    document.getElementById("vence").textContent = new Date(datos.exp * 1000).toLocaleString();
+    document.getElementById("token").value = respuesta.credential;
+    document.getElementById("resultado").hidden = false;
+    mensaje.textContent = datos.iss === "https://accounts.google.com" ? "" :
+      `Atención: el emisor es "${datos.iss}". El autorizador JWT debe usar exactamente ese valor.`;
+  }
+
+  document.getElementById("iniciar").addEventListener("click", () => {
+    const cliente = entrada.value.trim();
+    if (!cliente.endsWith(".apps.googleusercontent.com")) {
+      mensaje.textContent = "Pega el ID de cliente OAuth web (termina en .apps.googleusercontent.com).";
+      return;
+    }
+    try { localStorage.setItem("pos.client_id", cliente); } catch { /* opcional */ }
+    if (!window.google?.accounts?.id) { mensaje.textContent = "No cargó Google Identity Services. Revisa la conexión."; return; }
+    mensaje.textContent = "";
+    google.accounts.id.initialize({ client_id: cliente, callback: recibir, auto_select: false });
+    google.accounts.id.renderButton(document.getElementById("boton"), { theme: "outline", size: "large", locale: "es" });
+    google.accounts.id.prompt();
+  });
+
+  document.getElementById("copiar").addEventListener("click", async () => {
+    await navigator.clipboard.writeText(document.getElementById("token").value);
+    mensaje.textContent = "Token copiado.";
+  });
+</script>
+</body>
+</html>

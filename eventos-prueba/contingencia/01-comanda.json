@@ -1,0 +1,34 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /contingencia/comandas",
+  "rawPath": "/contingencia/comandas",
+  "headers": {
+    "content-type": "application/json",
+    "x-command-id": "01K7H0Z3Q8W4M2N5P6R7S8T918"
+  },
+  "pathParameters": {},
+  "queryStringParameters": null,
+  "requestContext": {
+    "requestId": "prueba-consola",
+    "routeKey": "POST /contingencia/comandas",
+    "http": {
+      "method": "POST",
+      "path": "/contingencia/comandas",
+      "sourceIp": "203.0.113.10"
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "mock-garzon",
+          "email": "mock-garzon@demo.invalid",
+          "email_verified": "true",
+          "name": "mock-garzon",
+          "iss": "https://accounts.google.com"
+        },
+        "scopes": null
+      }
+    }
+  },
+  "body": "{\"operacion\": \"pedido.abrir\", \"local_id\": \"local_01\", \"cuerpo\": {\"mesa_id\": \"m07\", \"pedido_id\": \"01K7H0Z3Q8W4M2N5P6R7S8T9W7\"}}",
+  "isBase64Encoded": false
+}

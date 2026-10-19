@@ -1,0 +1,14 @@
+{
+  "Records": [
+    {
+      "messageId": "prueba-1",
+      "receiptHandle": "prueba",
+      "body": "{\"tenant_id\": \"demo\", \"local_id\": \"local_01\", \"turno_id\": \"REEMPLAZAR_TURNO_ID\", \"venta_id\": \"01K7H0Z3Q8W4M2N5P6R7S8T9W4\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1760000000000"
+      },
+      "eventSource": "aws:sqs"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /locales/{local_id}/pedidos/{pedido_id}/finalizar",
+  "rawPath": "/locales/{local_id}/pedidos/{pedido_id}/finalizar",
+  "headers": {
+    "content-type": "application/json",
+    "x-command-id": "01K7H0Z3Q8W4M2N5P6R7S8T90P"
+  },
+  "pathParameters": {
+    "local_id": "local_01",
+    "pedido_id": "01K7H0Z3Q8W4M2N5P6R7S8T9W4"
+  },
+  "queryStringParameters": null,
+  "requestContext": {
+    "requestId": "prueba-consola",
+    "routeKey": "POST /locales/{local_id}/pedidos/{pedido_id}/finalizar",
+    "http": {
+      "method": "POST",
+      "path": "/locales/{local_id}/pedidos/{pedido_id}/finalizar",
+      "sourceIp": "203.0.113.10"
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "mock-cajero",
+          "email": "mock-cajero@demo.invalid",
+          "email_verified": "true",
+          "name": "mock-cajero",
+          "iss": "https://accounts.google.com"
+        },
+        "scopes": null
+      }
+    }
+  },
+  "body": "{\"tipo_documento\": \"boleta\"}",
+  "isBase64Encoded": false
+}

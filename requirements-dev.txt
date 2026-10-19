@@ -1,0 +1,6 @@
+# Solo para pruebas locales. El código que corre en Lambda usa únicamente la biblioteca estándar
+# y boto3 (incluido en el runtime de Python 3.12).
+pytest==9.1.1
+moto[dynamodb]==5.2.4
+boto3==1.43.113
+tzdata

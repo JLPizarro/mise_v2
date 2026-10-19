@@ -1,0 +1,31 @@
+{
+  "Records": [
+    {
+      "eventID": "1",
+      "eventName": "INSERT",
+      "eventSource": "aws:dynamodb",
+      "dynamodb": {
+        "SequenceNumber": "1",
+        "Keys": {
+          "PK": {
+            "S": "x"
+          },
+          "SK": {
+            "S": "y"
+          }
+        },
+        "NewImage": {
+          "PK": {
+            "S": "x"
+          },
+          "SK": {
+            "S": "y"
+          },
+          "tipo_item": {
+            "S": "PEDIDO"
+          }
+        }
+      }
+    }
+  ]
+}

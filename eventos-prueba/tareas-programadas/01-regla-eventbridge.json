@@ -1,0 +1,13 @@
+{
+  "version": "0",
+  "id": "prueba",
+  "detail-type": "Scheduled Event",
+  "source": "aws.events",
+  "account": "123456789012",
+  "time": "2026-10-15T20:00:00Z",
+  "region": "us-east-1",
+  "resources": [
+    "arn:aws:events:us-east-1:123456789012:rule/pos-tareas-programadas"
+  ],
+  "detail": {}
+}

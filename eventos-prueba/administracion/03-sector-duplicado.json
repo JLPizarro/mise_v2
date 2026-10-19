@@ -1,0 +1,37 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /locales/{local_id}/admin/{recurso}",
+  "rawPath": "/locales/{local_id}/admin/{recurso}",
+  "headers": {
+    "content-type": "application/json",
+    "x-command-id": "01K7H0Z3Q8W4M2N5P6R7S8T90Z"
+  },
+  "pathParameters": {
+    "local_id": "local_01",
+    "recurso": "sectores"
+  },
+  "queryStringParameters": null,
+  "requestContext": {
+    "requestId": "prueba-consola",
+    "routeKey": "POST /locales/{local_id}/admin/{recurso}",
+    "http": {
+      "method": "POST",
+      "path": "/locales/{local_id}/admin/{recurso}",
+      "sourceIp": "203.0.113.10"
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "mock-admin",
+          "email": "mock-admin@demo.invalid",
+          "email_verified": "true",
+          "name": "mock-admin",
+          "iss": "https://accounts.google.com"
+        },
+        "scopes": null
+      }
+    }
+  },
+  "body": "{\"nombre\": \"  terraza \"}",
+  "isBase64Encoded": false
+}

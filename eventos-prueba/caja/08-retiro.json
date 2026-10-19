@@ -1,0 +1,36 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /locales/{local_id}/caja/retiros",
+  "rawPath": "/locales/{local_id}/caja/retiros",
+  "headers": {
+    "content-type": "application/json",
+    "x-command-id": "01K7H0Z3Q8W4M2N5P6R7S8T90Q"
+  },
+  "pathParameters": {
+    "local_id": "local_01"
+  },
+  "queryStringParameters": null,
+  "requestContext": {
+    "requestId": "prueba-consola",
+    "routeKey": "POST /locales/{local_id}/caja/retiros",
+    "http": {
+      "method": "POST",
+      "path": "/locales/{local_id}/caja/retiros",
+      "sourceIp": "203.0.113.10"
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "mock-cajero",
+          "email": "mock-cajero@demo.invalid",
+          "email_verified": "true",
+          "name": "mock-cajero",
+          "iss": "https://accounts.google.com"
+        },
+        "scopes": null
+      }
+    }
+  },
+  "body": "{\"monto\": 5000, \"motivo\": \"Compra de hielo\", \"autorizador_id\": \"mock-admin\", \"codigo\": \"4321\"}",
+  "isBase64Encoded": false
+}

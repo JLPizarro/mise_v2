@@ -1,0 +1,37 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /locales/{local_id}/pedidos/{pedido_id}/items",
+  "rawPath": "/locales/{local_id}/pedidos/{pedido_id}/items",
+  "headers": {
+    "content-type": "application/json",
+    "x-command-id": "01K7H0Z3Q8W4M2N5P6R7S8T903"
+  },
+  "pathParameters": {
+    "local_id": "local_01",
+    "pedido_id": "01K7H0Z3Q8W4M2N5P6R7S8T9W4"
+  },
+  "queryStringParameters": null,
+  "requestContext": {
+    "requestId": "prueba-consola",
+    "routeKey": "POST /locales/{local_id}/pedidos/{pedido_id}/items",
+    "http": {
+      "method": "POST",
+      "path": "/locales/{local_id}/pedidos/{pedido_id}/items",
+      "sourceIp": "203.0.113.10"
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "mock-garzon",
+          "email": "mock-garzon@demo.invalid",
+          "email_verified": "true",
+          "name": "mock-garzon",
+          "iss": "https://accounts.google.com"
+        },
+        "scopes": null
+      }
+    }
+  },
+  "body": "{\"producto_id\": \"bebida\", \"cantidad\": 2, \"item_id\": \"01K7H0Z3Q8W4M2N5P6R7S8T9W6\", \"mesa_id\": \"m05\"}",
+  "isBase64Encoded": false
+}
